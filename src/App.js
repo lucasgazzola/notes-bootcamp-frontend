@@ -1,8 +1,7 @@
 import "./styles.css";
 import { useEffect, useState } from "react";
 import { Note } from "./Note";
-import { getAllNotes } from "./services/notes/getAllNotes";
-import { createNotes } from "./services/notes/createNotes";
+import { getAll, create, update } from "./services/notes/notes";
 
 export default function App() {
   const [notes, setNotes] = useState([]);
@@ -12,7 +11,7 @@ export default function App() {
   useEffect(() => {
     console.log("render");
     setLoading(true);
-    getAllNotes().then((notes) => {
+    getAll().then((notes) => {
       setNotes(notes);
       setLoading(false);
     });
@@ -27,11 +26,11 @@ export default function App() {
 
     const noteToAddToState = {
       userId: 1,
-      title: newNote,
-      body: newNote
+      content: newNote
     };
 
-    createNotes(noteToAddToState).then((newNote) => {
+    create(noteToAddToState).then((newNote) => {
+      console.log(newNote);
       setNotes((prevNotes) => prevNotes.concat(newNote));
     });
     setNewNote("");
