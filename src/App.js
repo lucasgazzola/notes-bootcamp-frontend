@@ -1,54 +1,171 @@
 import "./styles.css";
 import { useEffect, useState } from "react";
 import { Note } from "./Note";
-import { getAll, create, update } from "./services/notes/notes";
+import noteService from "./services/notes"
+import loginService from "./services/login"
 
 export default function App() {
   const [notes, setNotes] = useState([]);
   const [newNote, setNewNote] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [showAll, setShowAll] = useState(true);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    console.log("render");
-    setLoading(true);
-    getAll().then((notes) => {
-      setNotes(notes);
-      setLoading(false);
-    });
+    noteService
+      .getAll()
+      .then((notes) => {
+        setNotes(notes);
+      });
   }, []);
 
-  const handleChange = (event) => {
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedNoteAppUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON);
+      setUser(user);
+      noteService.setToken(user.token)
+    }
+  }, [])
+
+  const addNote = (event) => {
+    event.preventDefault();
+    const noteObject = {
+      content: newNote,
+      important: Math.random() > 0.5
+    }
+
+    noteService
+      .create(noteObject)
+      .then(returnedObject => {
+        setNotes([...notes, returnedObject])
+        setNewNote('')
+      })
+  }
+
+  const handleLogOut = () => {
+    setUser(null);
+    noteService.setToken(user.token);
+    window.localStorage.removeItem('loggedNoteAppUser')
+  }
+
+  const handleNoteChange = (event) => {
     setNewNote(event.target.value);
   };
 
-  const handleSubmit = (event) => {
+  const handleLogin = async (event) => {
     event.preventDefault();
 
-    const noteToAddToState = {
-      userId: 1,
-      content: newNote
-    };
+    try {
+      const user = await loginService.login({
+        username,
+        password
+      });
 
-    create(noteToAddToState).then((newNote) => {
-      console.log(newNote);
-      setNotes((prevNotes) => prevNotes.concat(newNote));
-    });
-    setNewNote("");
-  };
+      window.localStorage.setItem(
+        'loggedNoteAppUser', JSON.stringify(user)
+      )
+
+      console.log(user);
+      noteService.setToken(user.token)
+      setUser(user);
+      setUsername('');
+      setPassword('');
+    } catch (e) {
+      setErrorMessage('Wrong username or password');
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 3000)
+    }
+  }
+
+  // const handleSubmit = (event) => {
+  //   event.preventDefault();
+
+  //   const noteToAddToState = {
+  //     userId: 1,
+  //     content: newNote
+  //   };
+
+  //   noteService.create(noteToAddToState).then((newNote) => {
+  //     const error = newNote;
+  //     console.log(error.error);
+  //     if (!error.error) return setNotes((prevNotes) => prevNotes.concat(newNote))
+  //   });
+  //   setNewNote("");
+  // };
+
+  const renderLoginForm = () => (
+    <form onSubmit={handleLogin}>
+      <div>
+        <input
+          type='text'
+          value={username}
+          name='Username'
+          placeholder='Username'
+          onChange={event => setUsername(event.target.value)}
+        />
+      </div>
+      <div>
+        <input
+          type='password'
+          value={password}
+          name='Password'
+          placeholder='Password'
+          onChange={event => setPassword(event.target.value)}
+        />
+      </div>
+      <button>Login</button>
+    </form>
+  )
+
+
+  const renderAddNotesForm = () => (
+    <>
+      <div>
+        <button onClick={handleLogOut}>
+          Cerrar Sesión
+        </button>
+      </div>
+      <div>
+        <form onSubmit={addNote}>
+          <input
+            value={newNote}
+            onChange={handleNoteChange}
+          />
+          <button>Save</button>
+        </form>
+      </div>
+    </>
+  )
+
+
+  const notesToShow = notes
 
   return (
     <div>
       <h1>Notes</h1>
-      <h4>{loading ? "cargando" : ""}</h4>
-      <ol>
-        {notes.map((note) => (
-          <Note key={note.id} {...note} />
-        ))}
-      </ol>
-      <form onSubmit={handleSubmit}>
-        <input type="text" value={newNote} onChange={handleChange} />
-        <button>Crear Nota</button>
-      </form>
+      {
+        !user
+          ? renderLoginForm()
+          : renderAddNotesForm()
+      }
+      <div>
+        <button onClick={() => setShowAll(!showAll)}>
+          show {showAll ? 'important' : 'all'}
+        </button>
+      </div>
+      <ul>
+        {notesToShow.map((note, i) =>
+          <Note
+            key={i}
+            note={note}
+          // toggleImportance={() => toggleImportanceOf(note.id)}
+          />
+        )}
+      </ul>
     </div>
   );
 }
