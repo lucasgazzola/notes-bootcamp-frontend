@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 
-export default function Togglable({ children }) {
-  const [loginVisible, setloginVisible] = useState(false);
-  const hideWhenVisible = { display: loginVisible ? 'none' : '' };
+export default function Togglable ({ children }) {
+  const [loginVisible, setloginVisible] = useState(false)
+  const hideWhenVisible = { display: loginVisible ? 'none' : '' }
   const showWhenVisible = { display: loginVisible ? '' : 'none' }
   return (
     <>

@@ -1,76 +1,75 @@
-import './styles.css';
-import { useEffect, useState } from 'react';
-import { Note } from './components/Note';
-import noteService from './services/notes';
-import loginService from './services/login';
-import LoginForm from './components/LoginForm';
-import AddNotesForm from './components/AddNotesForm';
+import './styles.css'
+import { useEffect, useState } from 'react'
+import { Note } from './components/Note'
+import noteService from './services/notes'
+import loginService from './services/login'
+import LoginForm from './components/LoginForm'
+import AddNotesForm from './components/AddNotesForm'
 
-export default function App() {
-  const [notes, setNotes] = useState([]);
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [showAll, setShowAll] = useState(true);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [user, setUser] = useState(null);
+export default function App () {
+  const [notes, setNotes] = useState([])
+  const [errorMessage, setErrorMessage] = useState(null)
+  const [showAll, setShowAll] = useState(true)
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [user, setUser] = useState(null)
 
   useEffect(() => {
     noteService
       .getAll()
       .then((notes) => {
-        setNotes(notes);
-      });
-  }, []);
+        setNotes(notes)
+      })
+  }, [])
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedNoteAppUser');
+    const loggedUserJSON = window.localStorage.getItem('loggedNoteAppUser')
     if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON);
-      setUser(user);
-      noteService.setToken(user.token);
+      const user = JSON.parse(loggedUserJSON)
+      setUser(user)
+      noteService.setToken(user.token)
     }
-  }, []);
+  }, [])
 
   const addNote = (noteObject) => {
     noteService
       .create(noteObject)
       .then((returnedObject) => {
-        setNotes([...notes, returnedObject]);
-      });
-  };
+        setNotes([...notes, returnedObject])
+      })
+  }
 
   const handleLogOut = () => {
-    setUser(null);
-    noteService.setToken(user.token);
-    window.localStorage.removeItem('loggedNoteAppUser');
-  };
-
+    setUser(null)
+    noteService.setToken(user.token)
+    window.localStorage.removeItem('loggedNoteAppUser')
+  }
 
   const handleLogin = async (event) => {
-    event.preventDefault();
+    event.preventDefault()
 
     try {
       const user = await loginService.login({
         username,
-        password,
-      });
+        password
+      })
 
       window.localStorage.setItem(
-        'loggedNoteAppUser', JSON.stringify(user),
-      );
+        'loggedNoteAppUser', JSON.stringify(user)
+      )
 
-      console.log(user);
-      noteService.setToken(user.token);
-      setUser(user);
-      setUsername('');
-      setPassword('');
+      console.log(user)
+      noteService.setToken(user.token)
+      setUser(user)
+      setUsername('')
+      setPassword('')
     } catch (e) {
-      setErrorMessage('Wrong username or password');
+      setErrorMessage('Wrong username or password')
       setTimeout(() => {
-        setErrorMessage(null);
-      }, 3000);
+        setErrorMessage(null)
+      }, 3000)
     }
-  };
+  }
 
   // const handleSubmit = (event) => {
   //   event.preventDefault();
@@ -88,7 +87,7 @@ export default function App() {
   //   setNewNote("");
   // };
 
-  const notesToShow = notes;
+  const notesToShow = notes
 
   return (
     <div>
@@ -96,15 +95,16 @@ export default function App() {
       {
         !user
           ? <LoginForm
-            username={username}
-            password={password}
-            handleUsernameChange={event => setUsername(event.target.value)}
-            handlePasswordChange={event => setPassword(event.target.value)}
-            handleLogin={handleLogin} />
+              username={username}
+              password={password}
+              handleUsernameChange={event => setUsername(event.target.value)}
+              handlePasswordChange={event => setPassword(event.target.value)}
+              handleLogin={handleLogin}
+            />
           : <AddNotesForm
-            handleLogOut={handleLogOut}
-            addNote={addNote}
-          />
+              handleLogOut={handleLogOut}
+              addNote={addNote}
+            />
       }
       <div>
         <button onClick={() => setShowAll(!showAll)}>
@@ -120,9 +120,9 @@ export default function App() {
             note={note}
           // toggleImportance={() => toggleImportanceOf(note.id)}
           />
-        ),
+        )
         )}
       </ul>
     </div>
-  );
+  )
 }

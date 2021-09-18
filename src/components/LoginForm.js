@@ -1,9 +1,7 @@
-import React from 'react';
+import React from 'react'
 import Togglable from './Togglable'
 
-export default function LoginForm({
-  username, password, handleLogin, handlePasswordChange, handleUsernameChange
-}) {
+export default function LoginForm ({ username, password, handleLogin, handlePasswordChange, handleUsernameChange }) {
   return (
     <Togglable>
       <form onSubmit={handleLogin}>

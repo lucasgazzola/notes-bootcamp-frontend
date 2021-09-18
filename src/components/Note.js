@@ -3,5 +3,5 @@ export const Note = ({ note }) => {
     <li>
       <p>{note.content}</p>
     </li>
-  );
-};
+  )
+}
