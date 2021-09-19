@@ -1,17 +1,16 @@
-import axios from "axios";
-const BASE_URL = 'http://localhost:3001/api/notes/';
+import axios from 'axios'
+const BASE_URL = 'http://localhost:3001/api/notes/'
 
-
-let token = null;
+let token = null
 
 const setToken = newToken => {
   token = `Bearer ${newToken}`
 }
 
 const getAll = () => {
-  const request = axios.get(BASE_URL);
+  const request = axios.get(BASE_URL)
   return request.then(res => res.data)
-};
+}
 
 const create = (newObj) => {
   const config = {
@@ -21,7 +20,7 @@ const create = (newObj) => {
   }
   const request = axios.post(BASE_URL, newObj, config)
   return request.then(res => res.data)
-};
+}
 
 const update = (id, newObj) => {
   const config = {
@@ -29,7 +28,7 @@ const update = (id, newObj) => {
       Authorization: token
     }
   }
-  const request = axios.post(`${BASE_URL}/${id}`, newObj, config);
+  const request = axios.post(`${BASE_URL}/${id}`, newObj, config)
   return request.then(res => res.data)
 }
 
