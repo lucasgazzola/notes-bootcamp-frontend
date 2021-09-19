@@ -27,6 +27,8 @@
     "not op_mini all"
   ],
   "eslintConfig": {
-    "extends": "./node_modules/standard/eslintrc"
+    "extends": "./node_modules/standard/eslintrc.json",
+    "rules": {
+      "no-unused-vars": "warn"}
   }
 }
