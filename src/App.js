@@ -5,6 +5,7 @@ import noteService from './services/notes'
 import loginService from './services/login'
 import LoginForm from './components/LoginForm'
 import AddNotesForm from './components/AddNotesForm'
+import ErrorMessage from './components/ErrorMessage'
 
 export default function App () {
   const [notes, setNotes] = useState([])
@@ -15,14 +16,6 @@ export default function App () {
   const [user, setUser] = useState(null)
 
   useEffect(() => {
-    noteService
-      .getAll()
-      .then((notes) => {
-        setNotes(notes)
-      })
-  }, [])
-
-  useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedNoteAppUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
@@ -30,6 +23,15 @@ export default function App () {
       noteService.setToken(user.token)
     }
   }, [])
+
+  const getNotes = () => {
+    console.log('Hola')
+    noteService
+      .getAll()
+      .then((notes) => {
+        setNotes(notes)
+      })
+  }
 
   const addNote = (noteObject) => {
     noteService
@@ -43,6 +45,7 @@ export default function App () {
     setUser(null)
     noteService.setToken(user.token)
     window.localStorage.removeItem('loggedNoteAppUser')
+    setNotes([])
   }
 
   const handleLogin = async (event) => {
@@ -57,7 +60,7 @@ export default function App () {
       window.localStorage.setItem(
         'loggedNoteAppUser', JSON.stringify(user)
       )
-
+      getNotes()
       console.log(user)
       noteService.setToken(user.token)
       setUser(user)
@@ -92,6 +95,11 @@ export default function App () {
   return (
     <div>
       <h1>Notes</h1>
+      {
+      errorMessage
+        ? <ErrorMessage errorMessage={errorMessage} />
+        : ''
+      }
       {
         !user
           ? <LoginForm
