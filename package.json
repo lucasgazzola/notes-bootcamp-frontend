@@ -12,14 +12,16 @@
   },
   "devDependencies": {
     "@babel/runtime": "7.15.4",
-    "prop-types": "^15.7.2",
+    "cypress": "8.4.1",
+    "prop-types": "15.7.2",
     "standard": "16.0.3"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "cypress:open": "cypress open"
   },
   "browserslist": [
     ">0.2%",
