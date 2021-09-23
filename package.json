@@ -30,9 +30,13 @@
     "not op_mini all"
   ],
   "eslintConfig": {
+    "env": {
+      "cypress/globals": true
+    },
     "extends": "./node_modules/standard/eslintrc.json",
     "rules": {
       "no-unused-vars": "warn"
-    }
+    },
+    "plugins": ["cypress"]
   }
 }
